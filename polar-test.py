@@ -35,6 +35,11 @@ else:
         df.to_hdf('dat/1991-2020-count.hdf', 'test', format='fixed', mode='w', complib='lzo', complevel=3)
 df
 
+df = df[df.index.year >= 2010]
+
+miny = df.index.min().year
+maxy = df.index.max().year
+print(miny, maxy)
 
 # custom scaler to plot polar graphs
 class sqrtScale(mscale.ScaleBase):
@@ -97,14 +102,17 @@ def dress_axes(ax):
     # ax.tick_params(axis='x', color='b')
     # plt.grid(None, axis='x')
 
-    plt.grid(axis='y', color='b', linestyle=':', linewidth=1)
+    # plt.grid(axis='y', color='b', linestyle=':', linewidth=1)
+    # plt.grid(axis='x', color='b', linestyle=':', linewidth=1)
+    plt.grid(None, axis='x')
+    plt.grid(None, axis='y')
 
     # Here is the bar plot that we use as background
     max_dc = df.max()
-    bars = ax.bar(middles, max_dc, width=big_angle*np.pi/180*2,
-                  bottom=0, color='white', edgecolor='lightgray', zorder=0)
-    print(artist.getp(bars))
-    ax.set_yscale('sqrt')
+    # bars = ax.bar(middles, max_dc, width=big_angle*np.pi/180*2,
+    #               bottom=0, color='white', edgecolor='lightgray', zorder=0)
+    # print(artist.getp(bars))
+    # ax.set_yscale('sqrt')
 
 
 months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
@@ -112,32 +120,39 @@ big_angle = 360/12
 
 fig = plt.figure()
 ax = plt.subplot(111, polar=True)
-line,  = ax.plot([], [])
+empty = [], []
+empty *= (maxy-miny+1)
+lines  = ax.plot(*empty)
 
 dress_axes(ax)
 
 title = ax.text(x=0, y=0, s='', size=25, color='gray')
 
 t = mdates.date2num(df.index.to_pydatetime())
-tnorm = (t-t.min())/(t.max()-t.min())*2.*np.pi*30
+tnorm = (t-t.min())/(t.max()-t.min())*2.*np.pi*(maxy-miny+1)
 ax.fill_between(tnorm, df ,0, alpha=0.2)
 
 def init():
-    line.set_data([], [])
-    return line, 
+    colors = ['red', 'blue', 'green', 'magenta', 'orange', 'pink', 'black']
+    for i, line in enumerate(lines):
+        line.set_data([], [])
+        line.set_color(colors[i % len(colors)])
+    return lines
 
 def animate(i):
     year = df.index[i].year
     month = df.index[i].month
     title.set_text(f'{months[month-1]} {year}')
     title.set_ha('center')
-    
+
     datay = df[:i]
     if i > 365:
         datay[:i-365] = 0
-    line.set_data(tnorm[:i], datay)
+    lines[year-miny].set_data(tnorm[:i], datay)
 
-    return line,title
+    for y in range(miny, year-1):
+        lines[y-miny].set_alpha(1.0-0.1*min(9, (y-miny)))
+    return lines+[title]
 
 ani = animation.FuncAnimation(fig, animate, init_func=init, frames=len(tnorm), blit=True, interval=15, repeat=False)
 plt.show()
