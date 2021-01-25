@@ -33,7 +33,6 @@ csv = pd.read_csv(StringIO(req.text), delimiter=';', parse_dates=['jour'])
 
 REGIONS={
     11:["IDF", 12_213_447], 
-    2: ["Bassin parisien", 1],
     24: ["Centre-Val de Loire", 2_572_853],
     27: ["Bourgogne-Franche Comté", 2_807_807],
     28: ["Normandie", 3_499_280],
@@ -48,6 +47,9 @@ REGIONS={
     93: ["Provence Côte d'Azur", 5_052_832],
     94: ["Corse", 338_554]
     }
+# regions to be grouped together
+MIX = [(2, 24), (1, 11), (4, 44), (6, 75)]
+
 reg = pd.DataFrame(REGIONS, index=['nom','population']).T
 population = reg.population.sum()
 print(f"Population totale = {population}")
@@ -57,9 +59,17 @@ def plot_par_region(title, col):
     df=df.pivot(index='jour', columns='reg')
     if col == 'dc':
         df = df.diff().rolling(15).mean().clip(0)
+
+    # group some region together
+    df.set_axis([y for x, y in df.columns], axis=1, inplace=True)
+    for c1, c2 in MIX:
+        df[c2] = df[c2]+df[c1]
+        df = df.drop(columns=[c1])
+
     # rename the columns
     # correct relative to the population (disabled)
-    df.set_axis([REGIONS.get(y, [str(y)])[0] for x, y in df.columns], axis=1, inplace=True)
+    df.set_axis([REGIONS.get(y, [str(y)])[0]
+                 for y in df.columns], axis=1, inplace=True)
     for c in df.columns:
         try:
             pop = reg.population[reg.nom==c].values[0]
@@ -67,7 +77,7 @@ def plot_par_region(title, col):
             pop=1000000
             #print(df.tail(1))
         #print(c, pop)
-        #df[c] = df[c].divide(pop).multiply(population)
+        df[c] = df[c].divide(pop).multiply(population)
 
     s=df.sum()
     df=df[s.sort_values(ascending=False).index[:10]]
