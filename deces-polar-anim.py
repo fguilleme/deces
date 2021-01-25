@@ -34,7 +34,7 @@ else:
         df.to_hdf('dat/1991-2020-count.hdf', 'test', format='fixed', mode='w', complib='lzo', complevel=3)
 df
 
-df = df[df.index.year >= 2010]
+df = df[df.index.year >= 2000]
 
 miny = df.index.min().year
 maxy = df.index.max().year
@@ -91,27 +91,20 @@ def dress_axes(ax):
     ax.set_facecolor('w')
     ax.set_theta_zero_location("N")
     ax.set_theta_direction(-1)
-    # Here is how we position the months labels
 
+    # Here is how we position the months labels
     middles = np.arange(big_angle/2, 360, big_angle)*np.pi/180
     ax.set_xticks(middles)
     ax.set_xticklabels(months)
 
-    # ax.set_rlabel_position(359)
-    # ax.tick_params(axis='x', color='b')
-    # plt.grid(None, axis='x')
-
-    # plt.grid(axis='y', color='b', linestyle=':', linewidth=1)
-    # plt.grid(axis='x', color='b', linestyle=':', linewidth=1)
     plt.grid(None, axis='x')
     plt.grid(None, axis='y')
 
-    # Here is the bar plot that we use as background
     max_dc = df.max()
-    # bars = ax.bar(middles, max_dc, width=big_angle*np.pi/180*2,
-    #               bottom=0, color='white', edgecolor='lightgray', zorder=0)
-    # print(artist.getp(bars))
-    # ax.set_yscale('sqrt')
+    b = [int(max_dc), 0] * 6
+    bars = ax.bar(middles, b, width=big_angle*np.pi/180,
+                  bottom=max_dc//4, color='lightgray', alpha=0.2, zorder=0)
+    ax.set_yscale('sqrt')
 
 
 months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
@@ -130,10 +123,10 @@ marker, = ax.plot([], [], color='black', marker='o')
 
 t = mdates.date2num(df.index.to_pydatetime())
 tnorm = (t-t.min())/(t.max()-t.min())*2.*np.pi*(maxy-miny+1)
-ax.fill_between(tnorm, df ,0, alpha=0.2)
+ax.fill_between(tnorm, df, 0, alpha=0.2)
 
 def init():
-    colors = ['red', 'blue', 'green', 'magenta', 'cyan', 'brown', 'black']
+    colors = ['red', 'blue', 'green', 'magenta', 'navy', 'brown', 'black']
     for i, line in enumerate(lines):
         line.set_data([], [])
         line.set_color(colors[i % len(colors)])
@@ -167,5 +160,5 @@ def animate(i):
 ani = animation.FuncAnimation(fig, animate, init_func=init, frames=len(tnorm)//2, blit=True, interval=15, repeat=False)
 plt.show()
 print('anim done')
-ani.save("deces.mp4")
+# ani.save("deces.mp4")
 print('saving done')
