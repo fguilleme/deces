@@ -17,7 +17,6 @@ import os
 import time
 import math
 
-
 HDF_NAME = 'dat/1991-2020-count.hdf'
 if os.path.exists(HDF_NAME):
     print('reading compressed...')
@@ -127,32 +126,46 @@ lines  = ax.plot(*empty)
 dress_axes(ax)
 
 title = ax.text(x=0, y=0, s='', size=25, color='gray')
+marker, = ax.plot([], [], color='black', marker='o')
 
 t = mdates.date2num(df.index.to_pydatetime())
 tnorm = (t-t.min())/(t.max()-t.min())*2.*np.pi*(maxy-miny+1)
 ax.fill_between(tnorm, df ,0, alpha=0.2)
 
 def init():
-    colors = ['red', 'blue', 'green', 'magenta', 'orange', 'pink', 'black']
+    colors = ['red', 'blue', 'green', 'magenta', 'cyan', 'brown', 'black']
     for i, line in enumerate(lines):
         line.set_data([], [])
         line.set_color(colors[i % len(colors)])
     return lines
 
 def animate(i):
+    i *= 2
     year = df.index[i].year
     month = df.index[i].month
     title.set_text(f'{months[month-1]} {year}')
     title.set_ha('center')
 
-    datay = df[:i]
-    if i > 365:
-        datay[:i-365] = 0
-    lines[year-miny].set_data(tnorm[:i], datay)
+    segment = year-miny
+    start_in_segment = segment*365
+    y = df[start_in_segment:i]
+    x = tnorm[start_in_segment:i]
+    lines[segment].set_data(x, y)
+
+    if len(x) > 0:
+        marker.set_data([x[-1]], [y[-1]])
 
     for y in range(miny, year-1):
-        lines[y-miny].set_alpha(1.0-0.1*min(9, (y-miny)))
-    return lines+[title]
+        lines[y-miny].set_alpha(0.5)
+        lines[y-miny].set_label(str(y))
+    for y in range(miny, miny+(year-miny-1)//2):
+        lines[y-miny].set_alpha(0.3)
+    legend = ax.legend(lines, [str(y) for y in range(
+        miny, year+1)], loc='lower left')
+    return lines+[title, marker, legend]
 
-ani = animation.FuncAnimation(fig, animate, init_func=init, frames=len(tnorm), blit=True, interval=15, repeat=False)
+ani = animation.FuncAnimation(fig, animate, init_func=init, frames=len(tnorm)//2, blit=True, interval=15, repeat=False)
 plt.show()
+print('anim done')
+ani.save("deces.mp4")
+print('saving done')
