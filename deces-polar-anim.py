@@ -125,47 +125,73 @@ t = mdates.date2num(df.index.to_pydatetime())
 tnorm = (t-t.min())/(t.max()-t.min())*2.*np.pi*(maxy-miny+1)
 ax.fill_between(tnorm, df, 0, alpha=0.2)
 
-def init():
-    colors = ['red', 'blue', 'green', 'magenta', 'navy', 'brown', 'black']
-    for i, line in enumerate(lines):
-        line.set_data([], [])
-        line.set_color(colors[i % len(colors)])
-    return lines
+class AnimationController:
+    def __init__(self, miny, speed=1):
+        self.i = 0
+        self.speed = speed
+        self.colors = ['red', 'blue', 'green', 'magenta', 'navy', 'brown', 'black'] * 10
+        self.start = {}
+        self.miny = miny
 
-def animate(i):
-    i *= 2
-    year = df.index[i].year
-    month = df.index[i].month
-    title.set_text(f'{months[month-1]} {year}')
-    title.set_ha('center')
+    def color(self, y):
+        return self.colors[y-self.miny]
 
-    segment = year-miny
-    start_in_segment = segment*365
-    if start_in_segment > 0:
-        start_in_segment -= 1
-    y = df[start_in_segment:i]
-    x = tnorm[start_in_segment:i]
-    lines[segment].set_data(x, y)
+    def alpha(self, y):
+        return 1.0-(y-self.miny)*0.05
 
-    if len(x) > 0:
-        marker.set_data([x[-1]], [y[-1]])
+    def update_speed(self, i, y):
+        self.start[y] = self.start.get(y, i)
+        # if y in (2003, 2020):
+        #     self.speed = 1
+        # else:
+        #     self.speed = 2
 
-    interesting = [2003, 2020]
-    for y in range(miny, year-1):
-        lines[y-miny].set_alpha(0.5)
-        lines[y-miny].set_label(str(y))
-    for y in range(miny, year-2):
-        if y not in interesting:
-            lines[y-miny].set_alpha(0.3)
-    for y in range(miny, year-5):
-        if y not in interesting:
-            lines[y-miny].set_alpha(0.1)
-    legend = ax.legend(lines, [str(y) for y in range(
-        miny, year+1)], loc='lower left')
-    return lines+[title, marker, legend]
+    def get_start(self, y):
+        return (y-self.miny), (y-self.miny) * 365
 
-ani = animation.FuncAnimation(fig, animate, init_func=init, frames=len(tnorm)//2, blit=True, interval=15, repeat=False)
-plt.show()
-print('anim done')
-ani.save("deces.mp4")
-print('saving done')
+    def gen(self):
+        while True:
+            yield self.i
+            self.i += self.speed
+
+    def init(self):
+        for i, line in enumerate(lines):
+            line.set_data([], [])
+        return lines
+
+    def animate(self, i):
+        year = df.index[i].year
+        month = df.index[i].month
+
+        title.set_text(f'{months[month-1]} {year}')
+        title.set_ha('center')
+
+        self.update_speed(i, year)
+
+        segment, start_in_segment = self.get_start(year)
+
+        y = df[start_in_segment:i]
+        x = tnorm[start_in_segment:i]
+
+        lines[segment].set_data(x, y)
+
+        # if len(x) > 0:
+        #     marker.set_data([x[-1]], [y[-1]])
+
+        lines[segment].set_color(self.color(year))
+        lines[segment].set_alpha(self.alpha(year))
+        legend = ax.legend(lines, [str(y) for y in range(self.miny, year+1)], loc='lower left')
+        return lines+[title, marker, legend]
+
+    def play(self):
+        self.ani = animation.FuncAnimation(fig, self.animate, init_func=self.init, frames=self.gen, blit=True, interval=20, repeat=False)
+        plt.show()
+
+    def save(self, path):
+        print('save to ', path, '...', end='')
+        self.ani.save(path)
+        print('OK')
+
+ctlr = AnimationController(miny=miny, speed=2)
+ctlr.play()
+ctlr.save("deces.mp4")
