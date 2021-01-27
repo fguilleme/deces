@@ -1,21 +1,14 @@
 import pandas as pd
 import numpy as np
 
-import matplotlib
 import matplotlib.pyplot as plt
-import matplotlib.path as mpath
-import matplotlib.artist as artist
 import matplotlib.animation as animation
 from matplotlib import scale as mscale
 from matplotlib import transforms as mtransforms
 import matplotlib.dates as mdates
 
-
-import datetime
 from struct import unpack
 import os
-import time
-import math
 
 HDF_NAME = 'dat/1991-2020-count.hdf'
 if os.path.exists(HDF_NAME):
@@ -98,7 +91,7 @@ def configure_axes(ax):
     ax.set_xticklabels(months)
 
     plt.grid(None, axis='x')
-    plt.grid(None, axis='y')
+    plt.grid(axis='y', color='lightgray', linestyle=':', lw=2, alpha=0.5)
 
     max_dc = df.max()
     b = [int(max_dc), 0] * 6
@@ -127,60 +120,73 @@ ax.fill_between(tnorm, df, 0, alpha=0.2)
 
 class AnimationController:
     def __init__(self, miny, speed=1):
-        self.i = 0
-        self.speed = speed
         self.colors = ['red', 'blue', 'green', 'magenta', 'navy', 'brown', 'black'] * 10
+        self.favorite = { 2003: {'speed': 2, 'color': 'red', 'lw': 1.5, 'alpha': 1},
+                          2020: {'speed': 2, 'color': 'magenta', 'lw': 1.5, 'alpha': 1}}
+        self.speed = speed
         self.start = {}
         self.miny = miny
+        self.top = miny
 
-    def color(self, y):
-        return self.colors[y-self.miny]
+    def get_att(self, y, att, default):
+        if y in self.favorite:
+            return self.favorite.get(y)[att]
+        return default
 
-    def alpha(self, y):
-        return 1.0-(y-self.miny)*0.05
+    def get_speed(self, y):
+        return self.get_att(y, 'speed', 2)
 
-    def update_speed(self, i, y):
-        self.start[y] = self.start.get(y, i)
-        # if y in (2003, 2020):
-        #     self.speed = 1
-        # else:
-        #     self.speed = 2
+    def get_color(self, y):
+        return self.get_att(y, 'color', self.colors[y-self.miny])
 
-    def get_start(self, y):
-        return (y-self.miny), (y-self.miny) * 365
+    def get_lw(self, y):
+        return self.get_att(y, 'lw', 1)
+
+    def get_alpha(self, y):
+        d = self.top - y
+        return self.get_att(y, 'lw', max(1.0-d*0.2, 0.1))
 
     def gen(self):
+        counter = 0
         while True:
-            yield self.i
-            self.i += self.speed
+            yield counter
+            counter += self.speed
 
     def init(self):
         for i, line in enumerate(lines):
             line.set_data([], [])
         return lines
 
+    def get_date_info(self, i, dt):
+        year = dt.year
+        month = dt.month
+        day = i - dt.dayofyear + 1
+        self.start[year] = day
+        self.speed = self.get_speed(year)
+        self.top = max(year, self.top)
+        return year, month, year-self.miny, self.start[year]
+
     def animate(self, i):
-        year = df.index[i].year
-        month = df.index[i].month
+        year, month, segment, start_in_segment = self.get_date_info(i, df.index[i])
 
         title.set_text(f'{months[month-1]} {year}')
         title.set_ha('center')
-
-        self.update_speed(i, year)
-
-        segment, start_in_segment = self.get_start(year)
 
         y = df[start_in_segment:i]
         x = tnorm[start_in_segment:i]
 
         lines[segment].set_data(x, y)
 
-        # if len(x) > 0:
-        #     marker.set_data([x[-1]], [y[-1]])
+        lines[segment].set_color(self.get_color(year))
+        lines[segment].set_alpha(self.get_alpha(year))
+        lines[segment].set_lw(self.get_lw(year))
 
-        lines[segment].set_color(self.color(year))
-        lines[segment].set_alpha(self.alpha(year))
+        # fade old years
+        for i in range(year-self.miny):
+            lines[i].set_alpha(self.get_alpha(i+self.miny))
+
         legend = ax.legend(lines, [str(y) for y in range(self.miny, year+1)], loc='lower left')
+
         return lines+[title, marker, legend]
 
     def play(self):
@@ -194,4 +200,4 @@ class AnimationController:
 
 ctlr = AnimationController(miny=miny, speed=2)
 ctlr.play()
-ctlr.save("deces.mp4")
+# ctlr.save("deces.mp4")
