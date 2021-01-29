@@ -96,7 +96,7 @@ def configure_axes(ax):
     max_dc = df.max()
     b = [int(max_dc), 0] * 6
     bars = ax.bar(middles, b, width=big_angle*np.pi/180,
-                  bottom=max_dc//4, color='lightgray', alpha=0.2, zorder=0)
+                  bottom=max_dc//4, color='lightgray', edgecolor='gray', alpha=0.2, zorder=0)
     ax.set_yscale('sqrt')
 
 
@@ -127,6 +127,7 @@ class AnimationController:
         self.start = {}
         self.miny = miny
         self.top = miny
+        self.stopping = False
 
     def get_att(self, y, att, default):
         if y in self.favorite:
@@ -144,11 +145,11 @@ class AnimationController:
 
     def get_alpha(self, y):
         d = self.top - y
-        return self.get_att(y, 'lw', max(1.0-d*0.2, 0.1))
+        return self.get_att(y, 'lw', max(1.0-d*0.1, 0.1))
 
     def gen(self):
         counter = 0
-        while True:
+        while not self.stopping:
             yield counter
             counter += self.speed
 
@@ -167,15 +168,22 @@ class AnimationController:
         return year, month, year-self.miny, self.start[year]
 
     def animate(self, i):
-        year, month, segment, start_in_segment = self.get_date_info(i, df.index[i])
-
+        try:
+            year, month, segment, start_in_segment = self.get_date_info(i, df.index[i])
+        except:
+            self.stopping = True
+            return lines+[title, marker]
         title.set_text(f'{months[month-1]} {year}')
         title.set_ha('center')
 
-        y = df[start_in_segment:i]
-        x = tnorm[start_in_segment:i]
+        n = i+self.speed+1
+        if n >= len(tnorm):
+            n = len(tnorm)
+        y = df[start_in_segment:n]
+        x = tnorm[start_in_segment:n]
 
         lines[segment].set_data(x, y)
+        marker.set_data(x[-1:], y[-1:])
 
         lines[segment].set_color(self.get_color(year))
         lines[segment].set_alpha(self.get_alpha(year))
@@ -200,4 +208,4 @@ class AnimationController:
 
 ctlr = AnimationController(miny=miny, speed=2)
 ctlr.play()
-# ctlr.save("deces.mp4")
+ctlr.save("deces.mp4")
