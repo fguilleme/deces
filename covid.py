@@ -13,7 +13,7 @@ def group_cols(df, cols, gn):
 def filter(csv, col):
     dropped = ['dc', 'rad', 'rea', 'hosp']
     dropped.remove(col)
-    temp = csv[csv['reg'] == 11].groupby(['jour', 'reg', 'cl_age90']).\
+    temp = csv[csv['reg'] != 0].groupby(['jour', 'reg', 'cl_age90']).\
         sum().\
         drop(columns=dropped).\
         unstack('cl_age90').\

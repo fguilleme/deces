@@ -1,59 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-	<style>
-		.title-text {
-			font-size: 18pt;
-		}
-
-		.section-text {
-			font-size: 16pt;
-		}
-
-		.normal-text {
-			font-size: 14pt;
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <style>
+        .title-text {
+            font-size: 18pt;
         }
+
+        .section-text {
+            font-size: 16pt;
+        }
+
+        .normal-text {
+            font-size: 14pt;
+        }
+
         .disclaimer {
-            font-size:11pt; 
+            font-size: 11pt;
             color: gray;
         }
-	</style>
+    </style>
     <title>Playground COVID</title>
 </head>
+
 <body>
     <div class="card-panel section-text">
-        Quelques graphiques intéressants sur les statistiques covid (<a href="https://www.data.gouv.fr/fr/datasets/r/08c18e08-6780-452d-9b8c-ae244ad529b3">source</a>
+        Quelques graphiques intéressants sur les statistiques covid (<a
+            href="https://www.data.gouv.fr/fr/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/">source</a>)
     </div>
     <div class="card-panel teal section-text">
         Répartition par région
     </div>
     i<a href="img/covid-hosp-par-region.png"><img class="responsive-img" src="img/covid-hosp-par-region.png" alt=""></a>
     <a href="img/covid-rea-par-region.png"><img class="responsive-img" src="img/covid-rea-par-region.png" alt=""></a>
-    <a href="img/covid-deces-par-region.png"><img class="responsive-img" src="img/covid-deces-par-region.png" alt=""></a>
+    <a href="img/covid-deces-par-region.png"><img class="responsive-img" src="img/covid-deces-par-region.png"
+            alt=""></a>
 
     <div class="card-panel teal section-text">
         Répartition par région pondérée à la population
     </div>
     <div class="normal-text">
-        Ces graphes sont pondérés à la population de la région.<br/>
+        Ces graphes sont pondérés à la population de la région.<br />
         (à prendre avec des pincettes les codes de région étant supposés ceux de l'<a
-            href="https://fr.wikipedia.org/wiki/Codes_g%C3%A9ographiques_de_la_France">INSEE</a>) et le code de zone est parfois utilisé.
+            href="https://fr.wikipedia.org/wiki/Codes_g%C3%A9ographiques_de_la_France">INSEE</a>) et le code de zone est
+        parfois utilisé.
     </div>
-    <a href="img/covid-hosp-par-region-pondere.png"><img class="responsive-img" src="img/covid-hosp-par-region-pondere.png" alt=""></a>
-    <a href="img/covid-rea-par-region-pondere.png"><img class="responsive-img" src="img/covid-rea-par-region-pondere.png" alt=""></a>
-    <a href="img/covid-deces-par-region-pondere.png"><img class="responsive-img" src="img/covid-deces-par-region-pondere.png" alt=""></a>
+    <a href="img/covid-hosp-par-region-pondere.png"><img class="responsive-img"
+            src="img/covid-hosp-par-region-pondere.png" alt=""></a>
+    <a href="img/covid-rea-par-region-pondere.png"><img class="responsive-img"
+            src="img/covid-rea-par-region-pondere.png" alt=""></a>
+    <a href="img/covid-deces-par-region-pondere.png"><img class="responsive-img"
+            src="img/covid-deces-par-region-pondere.png" alt=""></a>
 
     <div class="card-panel teal section-text">
         Répartition par age
     </div>
-        
-        <div class="normal-text">
-            Ces graphiques sont ceux de la france mais il est intéréssant de considérer les mêmes graphiques par région comme PACA qui montrent un soudaine augmentation en janvier 2021.
-        </div>
+
+    <div class="normal-text">
+        Ces graphiques sont ceux de la france mais il est intéressant de considérer les mêmes graphiques par région
+        comme PACA qui montrent un soudaine augmentation en janvier 2021.
+    </div>
     <a href="img/covid-hosp-par-age.png"><img class="responsive-img" src="img/covid-hosp-par-age.png" alt=""></a>
     <a href="img/covid-rea-par-age.png"><img class="responsive-img" src="img/covid-rea-par-age.png" alt=""></a>
     <a href="img/covid-deces-par-age.png"><img class="responsive-img" src="img/covid-deces-par-age.png" alt=""></a>
