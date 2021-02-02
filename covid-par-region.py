@@ -1,6 +1,8 @@
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 
 import pandas as pd
-import matplotlib.pyplot as plt
 import requests
 from io import StringIO
 
@@ -54,7 +56,7 @@ reg = pd.DataFrame(REGIONS, index=['nom','population']).T
 population = reg.population.sum()
 print(f"Population totale = {population}")
 
-def plot_par_region(title, col):
+def plot_par_region(title, col, pond=False):
     df=csv[csv['cl_age90']==0][['jour','reg',col]]
     df=df.pivot(index='jour', columns='reg')
     if col == 'dc':
@@ -77,14 +79,28 @@ def plot_par_region(title, col):
             pop=1000000
             #print(df.tail(1))
         #print(c, pop)
-        df[c] = df[c].divide(pop).multiply(population)
+        if pond:
+            df[c] = df[c].divide(pop).multiply(population)
 
     s=df.sum()
     df=df[s.sort_values(ascending=False).index[:10]]
     df.plot.area(figsize=(20,8), title=title)
 
+dest = 'home/francois/www/francois_www/html/playground/img/'
+
 plot_par_region("Hospitalisations", 'hosp')
+plt.savefig(dest + 'covid-hosp-par-region.png')
+plot_par_region("Hospitalisations", 'hosp', pond=True)
+plt.savefig(dest + 'covid-hosp-par-region-pondere.png')
+
 plot_par_region("Réanimations", 'rea')
+plt.savefig(dest + 'covid-rea-par-region.png')
+plot_par_region("Réanimations", 'rea', pond=True)
+plt.savefig(dest + 'covid-rea-par-region-pondere.png')
+
 plot_par_region("Décès (lissé sur 15j)", 'dc')
+plt.savefig(dest + 'covid-deces-par-region.png')
+plot_par_region("Décès (lissé sur 15j)", 'dc', pond=True)
+plt.savefig(dest + 'covid-deces-par-region-pondere.png')
 
 plt.show()
