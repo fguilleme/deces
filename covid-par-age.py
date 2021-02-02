@@ -1,5 +1,7 @@
-import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
+import pandas as pd
 import requests
 from io import StringIO
 
@@ -30,10 +32,17 @@ def filter(csv, col):
 req = requests.get('https://www.data.gouv.fr/fr/datasets/r/08c18e08-6780-452d-9b8c-ae244ad529b3')
 csv = pd.read_csv(StringIO(req.text), delimiter=';', parse_dates=['jour'])
 
+dest = '/home/francois/www/francois_www/html/playground/img/'
+
 filter(csv, 'hosp').plot.area(figsize=(18, 6), title='Hospitalisations', grid=True)
+plt.savefig(dest + 'covid-hosp-par-age.png')
+
 filter(csv, 'rea').plot.area(figsize=(18, 6), title='Occupation réa', grid=True)
+plt.savefig(dest + 'covid-rea-par-age.png')
+
 # deaths is a cumulative sum so we need to apply a diff (we also smooth on 5 days)
 filter(csv, 'dc').diff().rolling(5).mean().clip(0).plot.area( figsize=(18, 6), title='Décès', grid=True)
+plt.savefig(dest + 'covid-deces-par-age.png')
 
 # temp = csv.groupby(['jour', 'cl_age90']).sum().drop(columns=['reg', 'rad']).unstack(
 #     'cl_age90').sum().unstack('cl_age90')
