@@ -1,3 +1,7 @@
+# data source https://www.data.gouv.fr/en/datasets/fichier-des-personnes-decedees/
+# create few graphs from the insee deceased person database
+# it grabs the data from 1991 to 2020 and stored it locally so it can be processed faster later on
+# as it is a pretty big sample (17 millions persons)
 T=True
 import matplotlib
 import matplotlib.pyplot as plt
@@ -14,7 +18,8 @@ import hashlib
 import requests
 import itertools
 
-
+# load the database
+# it either grabs and parse it from the insee site or use a cached copy if it exists
 def load_db():
     def read_fwf(path):
         # date parser as the date in insee csv is sometimes malformed
@@ -69,6 +74,8 @@ def load_db():
         # return valid records with at leat a correct birth year
         return df[df['DN'].dt.year > 1850]
 
+    # list of url to grab the data
+    # it should be mostly yearly data but it does not need to
     src = [
         "https://www.data.gouv.fr/en/datasets/r/a1f09595-0e79-4300-be1a-c97964e55f05",  # 2020
         "https://www.data.gouv.fr/en/datasets/r/02acf8f5-9190-4f8e-a37c-3b34eccac833",  # 2019
@@ -101,16 +108,19 @@ def load_db():
         "https://www.data.gouv.fr/en/datasets/r/cca6afa1-a4a6-4fe1-ab37-2afea70c4708",  # 1992
         "https://www.data.gouv.fr/en/datasets/r/ac43b776-cded-41a3-a2ef-f2ecca148f61",  # 1991
     ]
+    # use the md5 of the list to build the cache file name
     m = hashlib.md5()
     for x in src:
         m.update(x.encode('utf-8'))
     hash = m.hexdigest()
     path = f'dat/{hash}.hdf'
     if os.path.exists(path):
+        # the cache exists
         print('reading compressed...', end='')
         data = pd.read_hdf(path, 'test')
         print('OK')
     else:
+        # no cache exist for this list grab everything
         data = None
         for url in src:
             print('read', url)
@@ -133,7 +143,7 @@ def plot_death_per_day(df, path=None):
         .groupby(['DD']).count()\
         .rolling(smooth).median()\
         .rename(columns={'NOM': 'Décès/jour'})\
-        .plot(figsize=(18, 7), title='Nombre de décès lissé sur 30 jours')
+        .plot(figsize=(18, 7), title='Nombre de décès lissé sur 30 jours', yticks=range(0, 3000, 500))
     if path:
         plt.savefig(f'{base}/' + path)
 
@@ -162,7 +172,7 @@ def plot_per_country_birth(df, path=None):
         .rename(f'Pays de naissance (hors france) des personnes décédées en {year}')        \
         .sort_values(ascending=False)\
         .head(16)            \
-        .plot.pie(figsize=(10, 10), title=f'Répartition des pays de naissance en {year}')
+        .plot.pie(figsize=(10, 10), title=f'Répartition des pays de naissance (hors france) en {year}')
     if path:
         plt.savefig(f'{base}/' + path)
     df = None
@@ -200,6 +210,12 @@ def plot_deaths_in_year(df, agemax, path=None):
     colors = list(itertools.islice(
         itertools.cycle(colors), len(years)))+['black']
 
+    if agemax is None:
+        agemax = 200
+        age_s = ''
+    else:
+        age_s = f'de moins de {agemax+1} ans '
+
     temp = {k: dfs[k][dfs[k]['AGEX'] <= agemax] for k in dfs.keys()}
 
     df = [t.groupby(t['DD'].dt.dayofyear).count()['NOM']
@@ -209,10 +225,11 @@ def plot_deaths_in_year(df, agemax, path=None):
     df.columns = list(temp.keys())+['MEDIAN']
     ax = df.rolling(10).median().\
         plot(figsize=(24, 6), grid=True, xticks=np.cumsum([1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]), color=colors,
-             title=f'Nombre de décès journaliers de {years[0]} à {years[-1]} de moins de {agemax} ans lissé sur {smooth} jours')
+             title=f'Nombre de décès journaliers de {years[0]} à {years[-1]} {age_s}lissé sur {smooth} jours')
     ax.set_xticklabels(['JANVIER', 'FEVRIER', 'MARS', 'AVRIL', 'MAI', 'JUIN', 'JUILLET', 'AOUT', 'SEPTEMBRE',
                         'OCTOBRE', 'NOVEMBRE', 'DECEMBRE', ''], fontdict={'fontsize': 12,  'horizontalalignment': 'left'})
     ax.set_xlabel('Date de décès')
+    ax.set_yticks(range(0, 3000, 500))
     if path:
         plt.savefig(f'{base}/' + path)
     temp = None
@@ -263,16 +280,21 @@ db['AGEX'] = ((db['AGE']*10).astype(int)).astype(float)/10
 start = 1991
 last = db['DD'].max().year
 
-plot_death_per_day(db, 'death_per_day.png')
-plot_death_median_age(db, 'death_median_age.png')
-plot_most_death_age(db, 'most_death_age.png')
-
 plot_per_country_birth(db[db['DD'].dt.year == 2020], 'birth_country_2020.png')
 
-plot_age_deces(db[db['DD'].dt.year >= 2017], "homme", 1, 'death_age_male.png')
-plot_age_deces(db[db['DD'].dt.year >= 2017], "femme", 2, 'death_age_female.png')
+#plot_death_per_day(db, 'death_per_day.png')
+#plot_death_median_age(db, 'death_median_age.png')
+plot_most_death_age(db, 'most_prevalent_death_age.png')
 
-plot_deaths_in_year(db[db['DD'].dt.year >= 2017], 70, 'deaths_in_years.png')
+plot_age_deces(db[db['DD'].dt.year >= 2017], "homme", 1, 'death_age_male_2017_2020.png')
+plot_age_deces(db[db['DD'].dt.year >= 2017], "femme", 2, 'death_age_female_2017_2020.png')
+
+plot_age_deces(db[(db['DD'].dt.year >= 1996) & (db['DD'].dt.year < 1999)], "homme", 1, 'death_age_male_1996_1998.png')
+plot_age_deces(db[(db['DD'].dt.year >= 1996) & (db['DD'].dt.year < 1999)], "femme", 2, 'death_age_female_1996_1998.png')
+
+plot_deaths_in_year(db[db['DD'].dt.year >= 2017], None, 'deaths_in_2017_2020.png')
+plot_deaths_in_year(db[db['DD'].dt.year >= 2017], 70, 'deaths_in_2017_2020_below_70.png')
+plot_deaths_in_year(db[db['DD'].dt.year >= 2017], 80, 'deaths_in_2017_2020_below_80.png')
 
 plot_birth_year(db[db['DD'].dt.year == 2020], 'birth_year_2020.png')
 plot_birth_year(db[db['DD'].dt.year == 1996], 'birth_year_1996.png')
