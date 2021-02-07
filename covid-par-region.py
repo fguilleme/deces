@@ -60,7 +60,7 @@ def plot_par_region(title, col, pond=False):
     df=csv[csv['cl_age90']==0][['jour','reg',col]]
     df=df.pivot(index='jour', columns='reg')
     if col == 'dc':
-        df = df.diff().rolling(15).mean().clip(0)
+        df = df.diff().rolling(10).mean().clip(0)
 
     # group some region together
     df.set_axis([y for x, y in df.columns], axis=1, inplace=True)
@@ -98,9 +98,9 @@ plt.savefig(dest + 'covid-rea-par-region.png')
 plot_par_region("Réanimations", 'rea', pond=True)
 plt.savefig(dest + 'covid-rea-par-region-pondere.png')
 
-plot_par_region("Décès (lissé sur 15j)", 'dc')
+plot_par_region("Décès (lissé sur 10j)", 'dc')
 plt.savefig(dest + 'covid-deces-par-region.png')
-plot_par_region("Décès (lissé sur 15j)", 'dc', pond=True)
+plot_par_region("Décès (lissé sur 10j)", 'dc', pond=True)
 plt.savefig(dest + 'covid-deces-par-region-pondere.png')
 
 plt.show()
