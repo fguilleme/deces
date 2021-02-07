@@ -5,29 +5,18 @@ import pandas as pd
 import requests
 from io import StringIO
 
-def group_cols(df, cols, gn):
-    s = df[cols[0]]
-    for c in cols[1:]:
-        s = s + df[c]
-    df[gn] = s
-    return df.drop(columns=cols)
-
 def filter(csv, col):
     dropped = ['dc', 'rad', 'rea', 'hosp']
     dropped.remove(col)
-    temp = csv[csv['reg'] != 0].groupby(['jour', 'reg', 'cl_age90']).\
-        sum().\
-        drop(columns=dropped).\
-        unstack('cl_age90').\
-        groupby('jour').\
-        sum()
-    temp.columns = [x for _, x in temp.columns]
-    temp = group_cols(temp, [9, 19, 29, 39, 49], 0)
-    temp = group_cols(temp, [89, 90], 99)
-    temp = temp.reindex(sorted(temp.columns), axis=1)
-    temp.columns = ['Moins de 50 ans', '50 à 59 ans',
-                    '60 à 69 ans', '70 à 79 ans', 'plus de 80 ans']
-    return temp
+    return csv[csv['cl_age90'] > 0]\
+        .drop(columns=dropped)\
+        .groupby(['jour',  'cl_age90', 'reg'])\
+        .sum()\
+        .unstack('reg')\
+        .sum(axis=1)\
+        .unstack('cl_age90')\
+        .groupby({9:0, 19:0, 29:0, 39:0, 49:0, 59:1, 69:2, 79:3, 89:4, 90:4}, axis=1).sum()\
+        .rename(columns={1: '50 à 59 ans', 2: '60 à 69 ans', 3: '70 à 79 ans', 0: 'Moins de 50 ans', 4: 'Plus de 80 ans'})
 
 req = requests.get('https://www.data.gouv.fr/fr/datasets/r/08c18e08-6780-452d-9b8c-ae244ad529b3')
 csv = pd.read_csv(StringIO(req.text), delimiter=';', parse_dates=['jour'])
@@ -41,7 +30,8 @@ filter(csv, 'rea').plot.area(figsize=(18, 6), title='Occupation réa', grid=True
 plt.savefig(dest + 'covid-rea-par-age.png')
 
 # deaths is a cumulative sum so we need to apply a diff (we also smooth on 10 days)
-filter(csv, 'dc').diff().rolling(10).median().clip(0).plot.area( figsize=(18, 6), title='Décès (lissé sur 10 jours)', grid=True)
+smooth = 1
+filter(csv, 'dc').diff().rolling(smooth).median().clip(0).plot.area( figsize=(18, 6), title='Décès', grid=True)
 plt.savefig(dest + 'covid-deces-par-age.png')
 
 # temp = csv.groupby(['jour', 'cl_age90']).sum().drop(columns=['reg', 'rad']).unstack(
