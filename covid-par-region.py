@@ -60,7 +60,7 @@ def plot_par_region(title, col, pond=False):
     df=csv[csv['cl_age90']==0][['jour','reg',col]]
     df=df.pivot(index='jour', columns='reg')
     if col == 'dc':
-        df = df.diff().rolling(10).mean().clip(0)
+        df = df.diff().rolling(10).median().clip(0)
 
     # group some region together
     df.set_axis([y for x, y in df.columns], axis=1, inplace=True)
