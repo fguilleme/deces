@@ -5,20 +5,21 @@ matplotlib.use('Agg')
 import pandas as pd
 import requests
 from io import StringIO
+import datetime
 
 req = requests.get('https://www.data.gouv.fr/fr/datasets/r/08c18e08-6780-452d-9b8c-ae244ad529b3')
 csv = pd.read_csv(StringIO(req.text), delimiter=';', parse_dates=['jour'])
 
 REGIONS = {
-    1: ["NA", 12_213_447],
+    1: ["IDF", 12_213_447],
     11: ["IDF", 12_213_447],
-    2: ["NA", 2_572_853],
-    24: ["Centre-Val de Loire", 2_572_853],
+    2: ["Centre", 2_572_853],
+    24: ["Centre", 2_572_853],
     27: ["Bourgogne-Franche Comté", 2_807_807],
     28: ["Normandie", 3_499_280],
-    3: ["NA", 4_050_756],
-    32: ["Hauts de France", 6_004_108],
-    4: ["NA", 5_550_389],
+    3: ["Nord", 4_050_756],
+    32: ["Nord", 6_004_108],
+    4: ["Grand Est", 5_550_389],
     44: ["Grand Est", 5_550_389],
     52: ["Pays de Loire", 3_781_423],
     53: ["Bretagne", 3_335_414],
@@ -28,9 +29,9 @@ REGIONS = {
     93: ["Provence Côte d'Azur", 5_052_832],
     94: ["Corse", 338_554]
 }
+pop = {r:v for r,v in REGIONS.values()}
+population = sum(pop.values())
 
-reg = pd.DataFrame(REGIONS, index=['nom','population']).T
-population = reg.population.sum()
 print(f"Population totale = {population}")
 
 def plot_par_region(title, col, pond=False, smooth=1):
@@ -43,39 +44,38 @@ def plot_par_region(title, col, pond=False, smooth=1):
         .unstack('reg')\
         .stack(level=0)
 
-    if pond:
-        for c in df.columns:
-            try:
-                pop = reg.population[reg.nom==c].values[0]
-            except:
-                pop=1000000
-                #print(df.tail(1))
-            df[c] = df[c].divide(pop).multiply(population)
-
     # group and rename the columns
     df = df.groupby({k: v[0] for k, v in REGIONS.items()}, axis=1).sum()
+    if pond:
+        for c in df.columns:
+            df[c] = df[c].divide(pop.get(c, 1)).multiply(population).divide(1_000)
+
+
     s = df.sum()
     if col == 'dc':
         df = df.diff()
     df = df[s.sort_values(ascending=False).index]
+    df.index = df.index.get_level_values(0)
+    now= datetime.datetime.today().strftime("%d/%m/%Y %H:%M")
     df.clip(0).rolling(smooth).median()\
-        .plot.area(stacked=True, figsize=(18, 8))
+        .plot.area(stacked=True, figsize=(18, 8), title=title+f' - {now}')
 
 dest = '/home/francois/www/francois_www/html/playground/img/'
+# dest = 'www/img/'
 
-plot_par_region("Hospitalisations", 'hosp')
+plot_par_region("Hospitalisations par région", 'hosp')
 plt.savefig(dest + 'covid-hosp-par-region.png')
-plot_par_region("Hospitalisations", 'hosp', pond=True)
+plot_par_region("Hospitalisations pondérées par région", 'hosp', pond=True)
 plt.savefig(dest + 'covid-hosp-par-region-pondere.png')
 
-plot_par_region("Réanimations", 'rea')
+plot_par_region("Réanimations par région", 'rea')
 plt.savefig(dest + 'covid-rea-par-region.png')
-plot_par_region("Réanimations", 'rea', pond=True)
+plot_par_region("Réanimations pondérées par région", 'rea', pond=True)
 plt.savefig(dest + 'covid-rea-par-region-pondere.png')
 
-plot_par_region("Décès", 'dc', smooth=1)
+plot_par_region("Décès par région", 'dc', smooth=1)
 plt.savefig(dest + 'covid-deces-par-region.png')
-plot_par_region("Décès", 'dc', pond=True, smooth=1)
+plot_par_region("Décès pondérés par région", 'dc', pond=True, smooth=1)
 plt.savefig(dest + 'covid-deces-par-region-pondere.png')
 
 plt.show()
