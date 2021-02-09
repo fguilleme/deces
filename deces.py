@@ -79,7 +79,7 @@ def plot_deaths_in_year(df, agemax, path=None):
     ymin = min(dfs.keys())
     ymax = max(dfs.keys())
     years = range(ymin, ymax+1)
-    colors = ['green', 'magenta', 'blue',  'pink', 'cyan', 'red'] + ['black']
+    colors = ['green', 'magenta', 'blue',  'red', 'cyan', 'brown'] + ['black']
     import itertools
     colors = list(itertools.islice(
         itertools.cycle(colors), len(years)))+['black']
@@ -99,7 +99,7 @@ def plot_deaths_in_year(df, agemax, path=None):
     df.columns = list(temp.keys())+['MEDIAN']
     ax = df.rolling(10).median().\
         plot(figsize=(24, 6), grid=True, xticks=np.cumsum([1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]), color=colors,
-             title=f'Nombre de décès journaliers de {years[0]} à {years[-1]} {age_s}lissé sur {smooth} jours')
+             title=f'Nombre de décès journaliers de {years[0]} à {years[-1]} {age_s}lissé sur {smooth} jours', lw=2)
     ax.set_xticklabels(['JANVIER', 'FEVRIER', 'MARS', 'AVRIL', 'MAI', 'JUIN', 'JUILLET', 'AOUT', 'SEPTEMBRE',
                         'OCTOBRE', 'NOVEMBRE', 'DECEMBRE', ''], fontdict={'fontsize': 12,  'horizontalalignment': 'left'})
     ax.set_xlabel('Date de décès')
@@ -142,6 +142,7 @@ def plot_birth_year(df, path=None):
 # ======================================================================================================================
 def main():
     db = insee.load_db()
+    db = db[db['DD'].dt.year < 2021]
     db['AGEX'] = ((db['AGE']*10).astype(int)).astype(float)/10
 
     plot_per_country_birth(db[db['DD'].dt.year == 2020], 'birth_country_2020.png')
