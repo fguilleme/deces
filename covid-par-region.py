@@ -61,7 +61,7 @@ def plot_par_region(title, col, pond=False, smooth=1):
         .plot.area(stacked=True, figsize=(18, 8), title=title+f' - {now}')
 
 dest = '/home/francois/www/francois_www/html/playground/img/'
-dest = 'www/img/'
+# dest = 'www/img/'
 
 plot_par_region("Hospitalisations par région", 'hosp')
 plt.savefig(dest + 'covid-hosp-par-region.png')
