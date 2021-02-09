@@ -23,7 +23,7 @@ req = requests.get('https://www.data.gouv.fr/fr/datasets/r/08c18e08-6780-452d-9b
 csv = pd.read_csv(StringIO(req.text), delimiter=';', parse_dates=['jour'])
 
 dest = '/home/francois/www/francois_www/html/playground/img/'
-# dest = 'www/img/'
+dest = 'www/img/'
 
 now= datetime.datetime.today().strftime("%d/%m/%Y %H:%M")
 filter(csv, 'hosp').plot.area(figsize=(18, 6), title=f'Hospitalisations - {now}', grid=True)

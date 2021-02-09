@@ -67,6 +67,7 @@ def load_db():
     # list of url to grab the data
     # it should be mostly yearly data but it does not need to
     src = [
+        'https://www.data.gouv.fr/fr/datasets/r/9bc3b4b0-faf1-49cd-bd1f-feb5bec303bd',  # 2021 - m1
         "https://www.data.gouv.fr/en/datasets/r/a1f09595-0e79-4300-be1a-c97964e55f05",  # 2020
         "https://www.data.gouv.fr/en/datasets/r/02acf8f5-9190-4f8e-a37c-3b34eccac833",  # 2019
         "https://www.data.gouv.fr/en/datasets/r/c2a97b38-5c0d-4f21-910f-1cea164c2c89",  # 2018

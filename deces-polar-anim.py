@@ -10,27 +10,16 @@ import matplotlib.dates as mdates
 from struct import unpack
 import os
 
-HDF_NAME = 'dat/1991-2020-count.hdf'
-if os.path.exists(HDF_NAME):
-    print('reading compressed...')
-    df = pd.read_hdf(HDF_NAME, 'test')
-    print('done')
-else:
-    HDF_NAME = 'dat/1991_2020.hdf'
-    if os.path.exists(HDF_NAME):
-        print('reading compressed...')
-        df = pd.read_hdf(HDF_NAME, 'test')
-        print('counting...')
-        df = df.groupby('DD').count()['NOM']
-        df = df[df.index.year > 1990]
-        print('writing...')
-        df.to_hdf('dat/1991-2020-count.hdf', 'test', format='fixed', mode='w', complib='lzo', complevel=3)
-df
+import insee
 
-df = df[df.index.year >= 2000]
+
+df = insee.load_db()
+df = df.groupby('DD').count()['NOM']
+
+df = df[(df.index.year >= 2000) & (df.index.year < 2021)]
 
 miny = df.index.min().year
-maxy = df.index.max().year
+maxy = 2020
 print(miny, maxy)
 
 # custom scaler to plot polar graphs
@@ -142,11 +131,11 @@ class AnimationController:
         return self.get_att(y, 'color', self.colors[y-self.miny])
 
     def get_lw(self, y):
-        return self.get_att(y, 'lw', 1)
+        return self.get_att(y, 'lw', 1.5)
 
     def get_alpha(self, y):
         d = self.top - y
-        return self.get_att(y, 'lw', max(1.0-d*0.1, 0.1))
+        return self.get_att(y, 'lw', max(1.0-d*0.05, 0.5))
 
     def gen(self):
         counter = 0
