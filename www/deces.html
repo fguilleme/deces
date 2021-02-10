@@ -4,6 +4,9 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	</head>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 	<title>Playground</title>
@@ -70,14 +73,16 @@
 	<a href="img/death_age_male_1996_1998.png"><img class="responsive-img" src="img/death_age_male_1996_1998.png"></a>
 	<a href="img/death_age_female_1996_1998.png"><img class="responsive-img"
 			src="img/death_age_female_1996_1998.png"></a>
-		<div class="card-panel teal section-text">
-			Age de décès le plus 'mortel'
-		</div>
-		<div class="normal-text">
-			Age pour lequel il y a le plus de décès. C'est le sommet de la courbe en forme de cloche. Il est, du fait de l'asymétrie, plus élevé que la médiane.<br/>
-			On remarque aisemment cette falaise  qui correspond à la cuvette qu'on voit sur les courbes ci-dessus et qui est due à la chute de natalité durant la première guerre mondiale.
-		</div>
-	<a href="img/most_prevalent_death_age.png"><img src="img/most_prevalent_death_age.png" alt=""></a>
+	<div class="card-panel teal section-text">
+		Age de décès le plus 'mortel'
+	</div>
+	<div class="normal-text">
+		Age pour lequel il y a le plus de décès. C'est le sommet de la courbe en forme de cloche. Il est, du fait de l'asymétrie, plus élevé que la médiane.<br/>
+		On remarque aisemment cette falaise  qui correspond à la cuvette qu'on voit sur les courbes ci-dessus et qui est due à la chute de natalité durant la première guerre mondiale.
+	</div>
+	<a href="img/most_prevalent_death_age.png">
+		<img class="responsive-img" src="img/most_prevalent_death_age.png" alt="">
+	</a>
 	<div class="card-panel teal section-text">
 		Date naissance pour les décès de 2020
 	</div>
@@ -94,17 +99,24 @@
 		Décès quotidiens de 2017 à 2020
 	</div>
 	<div class="normal-text">
-		On remarque nettement le COVID quoique l'incidence sur l'année soit de 8%. 
+		On remarque nettement le COVID quoique l'incidence sur l'année soit de 8.5%. 
 	</div>
 	</p>
-	<a href="img/deaths_in_2017_2020.png"><img class="responsive-img" src="img/deaths_in_2017_2020.png" alt=""></a>
+	<a href="img/deaths_in_2017_2020.png">
+		<img class="responsive-img" src="img/deaths_in_2017_2020.png" alt="">
+	</a>
 	<div class="normal-text">
-		Pareil pour les moins de 80 ans.l + click)" alt=""></a>
+		Pareil pour les moins de 80 ans.
+	</div>
+	<a href="img/deaths_in_2017_2020_below_80.png">
+		<img class="responsive-img" src="img/deaths_in_2017_2020_below_80.png" alt="">
+	</a>
 	<div class="normal-text">
 		Et pour les moins de 70 ans.
 	</div>
-	<a href="img/deaths_in_2017_2020_below_70.png"><img class="responsive-img"
-			src="img/deaths_in_2017_2020_below_70.png" alt=""></a>
+	<a href="img/deaths_in_2017_2020_below_70.png">
+		<img class="responsive-img" src="img/deaths_in_2017_2020_below_70.png" alt="">
+	</a>
 	<div class="card-panel teal section-text">
 		Animation des décès de 2000 à 2020
 	</div>
@@ -358,10 +370,34 @@
         Je ne suis pas statisticien mais un amateur curieux qui sait compter (il n'y a besoin que de ça...)
     </div>
 	<div>
-		<a href="https://raw.githubusercontent.com/fguilleme/deces/master/deces.py">Source python</a>
-		<a href="https://raw.githubusercontent.com/fguilleme/deces/master/insee.py">Module python insee</a>
-		<a href="https://raw.githubusercontent.com/fguilleme/deces/master/deces-polar-anim.py">Source python pour générer la vidéo</a>
+		<a href="https://raw.githubusercontent.com/fguilleme/deces/master/deces.py">Source python</a><br/>
+		<a href="https://raw.githubusercontent.com/fguilleme/deces/master/insee.py">Module python insee</a><br/>
+		<a href="https://raw.githubusercontent.com/fguilleme/deces/master/deces-polar-anim.py">Source python pour générer la vidéo</a><br/>
 	</div>
 </body>
+	<script>
+		// Plugin isInViewport
+			!function (e, n) { "object" == typeof exports && "undefined" != typeof module ? n(require("jquery"), require("window")) : "function" == typeof define && define.amd ? define("isInViewport", ["jquery", "window"], n) : n(e.$, e.window) }(this, function (e, n) {
+				"use strict"; function t(n) { var t = this; if (1 === arguments.length && "function" == typeof n && (n = [n]), !(n instanceof Array)) throw new SyntaxError("isInViewport: Argument(s) passed to .do/.run should be a function or an array of functions"); return n.forEach(function (n) { "function" != typeof n ? (console.warn("isInViewport: Argument(s) passed to .do/.run should be a function or an array of functions"), console.warn("isInViewport: Ignoring non-function values in array and moving on")) : [].slice.call(t).forEach(function (t) { return n.call(e(t)) }) }), this } function o(n) { var t = e("<div></div>").css({ width: "100%" }); n.append(t); var o = n.width() - t.width(); return t.remove(), o } function r(t, i) { var a = t.getBoundingClientRect(), u = a.top, c = a.bottom, f = a.left, l = a.right, d = e.extend({ tolerance: 0, viewport: n }, i), s = !1, p = d.viewport.jquery ? d.viewport : e(d.viewport); p.length || (console.warn("isInViewport: The viewport selector you have provided matches no element on page."), console.warn("isInViewport: Defaulting to viewport as window"), p = e(n)); var w = p.height(), h = p.width(), v = p[0].toString(); if (p[0] !== n && "[object Window]" !== v && "[object DOMWindow]" !== v) { var g = p[0].getBoundingClientRect(); u -= g.top, c -= g.top, f -= g.left, l -= g.left, r.scrollBarWidth = r.scrollBarWidth || o(p), h -= r.scrollBarWidth } return d.tolerance = ~~Math.round(parseFloat(d.tolerance)), d.tolerance < 0 && (d.tolerance = w + d.tolerance), l <= 0 || f >= h ? s : s = d.tolerance ? u <= d.tolerance && c >= d.tolerance : c > 0 && u <= w } function i(n) { if (n) { var t = n.split(","); return 1 === t.length && isNaN(t[0]) && (t[1] = t[0], t[0] = void 0), { tolerance: t[0] ? t[0].trim() : void 0, viewport: t[1] ? e(t[1].trim()) : void 0 } } return {} } e = "default" in e ? e.default : e, n = "default" in n ? n.default : n,/**
+ * @author  Mudit Ameta
+ * @license https://github.com/zeusdeux/isInViewport/blob/master/license.md MIT
+ */
+					e.extend(e.expr[":"], { "in-viewport": e.expr.createPseudo ? e.expr.createPseudo(function (e) { return function (n) { return r(n, i(e)) } }) : function (e, n, t) { return r(e, i(t[3])) } }), e.fn.isInViewport = function (e) { return this.filter(function (n, t) { return r(t, e) }) }, e.fn.run = t
+			});
+			//# isInViewport
 
+			// Play Video
+			$(function () {
+				var $video = $('video');
+				var $window = $(window);
+
+				$window.scroll(function () {
+					if ($video.is(":in-viewport")) {
+						$video[0].play();
+					} else {
+						$video[0].pause();
+					}
+				});
+			});
+	</script>
 </html>
