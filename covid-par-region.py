@@ -1,5 +1,6 @@
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 matplotlib.use('Agg')
 
 import pandas as pd
@@ -48,7 +49,7 @@ def plot_par_region(title, col, pond=False, smooth=1):
     df = df.groupby({k: v[0] for k, v in REGIONS.items()}, axis=1).sum()
     if pond:
         for c in df.columns:
-            df[c] = df[c].divide(pop.get(c, 1)).multiply(population).divide(1_000)
+            df[c] = df[c].divide(pop.get(c, 1))
 
 
     s = df.sum()
@@ -57,8 +58,11 @@ def plot_par_region(title, col, pond=False, smooth=1):
     df = df[s.sort_values(ascending=False).index]
     df.index = df.index.get_level_values(0)
     now= datetime.datetime.today().strftime("%d/%m/%Y %H:%M")
-    df.clip(0).rolling(smooth).median()\
+    p=df.clip(0).rolling(smooth).median()\
         .plot.area(stacked=True, figsize=(18, 8), title=title+f' - {now}')
+    if pond:
+        p.yaxis.set_major_formatter(
+            FuncFormatter(lambda y, _: '{:.2%}'.format(y)))
 
 dest = '/home/francois/www/francois_www/html/playground/img/'
 # dest = 'www/img/'
