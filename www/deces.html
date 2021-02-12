@@ -36,7 +36,7 @@
 </head>
 
 <body>
-	<div class='light-green lighten-5 gray-text title-text'>
+	<div class='light-green lighten-5 gray-text normal-text'>
 		Je vous présente ici quelques graphiques directement issus de la base des décès de l'INSEE dont le liens est
 		précisé ci-dessous.<br />
 		Mis à jour le 8/2/2021
@@ -67,7 +67,7 @@
 			alt=""></a>
 	<div class="card-panel teal section-text">Même chose de 1996 à 1998 </div>
 	<div class="normal-text">
-		On remarque un gros bassin qui simplement du à la baisse de natalité pendant la guerre de 14-18. Normal les
+		On remarque un gros bassin qui est simplement du à la baisse de natalité pendant la guerre de 14-18. Normal les
 		hommes étaient au front et ne pouvaient donc pas jouer au docteur avec madame.
 	</div>
 	<a href="img/death_age_male_1996_1998.png"><img class="responsive-img" src="img/death_age_male_1996_1998.png"></a>
@@ -77,8 +77,8 @@
 		Age de décès le plus 'mortel'
 	</div>
 	<div class="normal-text">
-		Age pour lequel il y a le plus de décès. C'est le sommet de la courbe en forme de cloche. Il est, du fait de l'asymétrie, plus élevé que la médiane.<br/>
-		On remarque aisemment cette falaise  qui correspond à la cuvette qu'on voit sur les courbes ci-dessus et qui est due à la chute de natalité durant la première guerre mondiale.
+		Age pour lequel il y a le plus de décès. C'est le sommet de la courbe en forme de cloche déformée. Il est, du fait de l'asymétrie, plus élevé que la médiane.<br/>
+		On remarque facilement cette falaise  qui correspond à la cuvette qu'on voit sur les courbes ci-dessus et qui est due à la chute de natalité durant la première guerre mondiale.
 	</div>
 	<a href="img/most_prevalent_death_age.png">
 		<img class="responsive-img" src="img/most_prevalent_death_age.png" alt="">
@@ -88,9 +88,8 @@
 	</div>
 	<div class="normal-text">
 		On voit nettement les effets sur les personnes nées entre 1914 et 1919.<br />
-		Plus discret mais on peut remarquer que les hommes décèdent plus à partir de l'age de 15 ans et que l'écart ne
-		cesse
-		d'augmenter.
+		Plus discret on peut remarquer que les hommes décèdent plus à partir de l'age de 15 ans et que l'écart ne
+		cesse d'augmenter.
 	</div>
 	<a href="img/birth_year_2020.png"><img class="responsive-img" src="img/birth_year_2020.png" alt=""></a>
 	<a href="img/birth_year_1996.png"><img class="responsive-img" src="img/birth_year_1996.png" alt=""></a>
@@ -123,8 +122,9 @@
 	<div class="normal-text">
 		Une petite animation en coordonées polaire. Je me suis inspiré de celle de <a
 			href="https://twitter.com/coulmont?lang=fr">Baptiste Coulmont</a><br />
-		Toutefois j'utilise la racine carré du nombre de decès ce qui est moins impressionant. La raison est quel + click)nelle au carré du rayon. En prenant la racine on s'assure que la
-		surface d'une portion de cercle est bien proportionelle au nombre de décès. Mais c'est moins impressionant en
+		Toutefois j'utilise la racine carré du nombre de decès ce qui est moins impressionant.<br/>
+		La raison est que l'aire d'une portion de cercle est proportionelle au carré du rayon. En prenant la racine on s'assure que la
+		surface d'une portion de cercle est bien proportionelle au nombre de décès. Mais c'est moins impressionant, bien que plus exact, en
 		particulier pour la canicule de 2003.
 	</div>
 	<div class="center">
@@ -263,8 +263,7 @@
 		<td>533618</td>
 		<td>-2.27</td>
 	</tr>
-	<tr>
-		<td>2007</td>
+	<traisemment
 		<td>76.5</td>
 		<td>84.3</td>
 		<td>538442</td>
@@ -367,7 +366,7 @@
 
     <div class="disclaimer">
         <b>Disclaimer: </b>
-        Je ne suis pas statisticien mais un amateur curieux qui sait compter (il n'y a besoin que de ça...)
+        Je ne suis pas statisticien mais un amateur curieux qui sait compter (il n'y a besoin que de savoir compter... et programmer en python/pandas)
     </div>
 	<div>
 		<a href="https://raw.githubusercontent.com/fguilleme/deces/master/deces.py">Source python</a><br/>
