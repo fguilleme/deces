@@ -33,8 +33,8 @@ filter(csv, 'rea').plot.area(figsize=(18, 6), title=f'Occupation réa - {now}', 
 plt.savefig(dest + 'covid-rea-par-age.png')
 
 # deaths is a cumulative sum so we need to apply a diff (we also smooth on 10 days)
-smooth = 1
-filter(csv, 'dc').diff().rolling(smooth).median().clip(0).plot.area( figsize=(18, 6), title=f'Décès - {now}', grid=True)
+smooth = 3
+filter(csv, 'dc').diff().rolling(smooth).median().clip(0).plot.area( figsize=(18, 6), title=f'Décès lissé sur {smooth}j- {now}', grid=True)
 plt.savefig(dest + 'covid-deces-par-age.png')
 
 # temp = csv.groupby(['jour', 'cl_age90']).sum().drop(columns=['reg', 'rad']).unstack(

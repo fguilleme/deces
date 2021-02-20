@@ -60,14 +60,14 @@ def plot_par_region(title, col, pond=False, smooth=1, inline=False):
     df.index = df.index.get_level_values(0)
     now= datetime.datetime.today().strftime("%d/%m/%Y %H:%M")
     if pond:
-        p = df.clip(0).rolling(smooth).median()\
+        p = df.clip(0).rolling(smooth).mean()\
             .plot(figsize=(18, 8), title=title+f' - {now}')
         p.yaxis.set_major_formatter(
             FuncFormatter(lambda y, _: '{:.2%}'.format(y)))
         if inline:
             labelLines(plt.gca().get_lines(), align=False, fontsize=12)
     else:
-        df.clip(0).rolling(smooth).median()\
+        df.clip(0).rolling(smooth).mean()\
             .plot.area(stacked=True, figsize=(18, 8), title=title+f' - {now}')
 
 dest = '/home/francois/www/francois_www/html/playground/img/'
@@ -75,17 +75,19 @@ dest = '/home/francois/www/francois_www/html/playground/img/'
 
 plot_par_region("Hospitalisations par région", 'hosp')
 plt.savefig(dest + 'covid-hosp-par-region.png')
-plot_par_region("Hospitalisations pondérées par région", 'hosp', pond=True, inline=True)
+plot_par_region("Hospitalisations par ré gion relatifs à la population ",
+                'hosp', pond=True, inline=True)
 plt.savefig(dest + 'covid-hosp-par-region-pondere.png')
 
 plot_par_region("Réanimations par région", 'rea')
 plt.savefig(dest + 'covid-rea-par-region.png')
-plot_par_region("Réanimations pondérées par région", 'rea', pond=True, inline=True)
+plot_par_region("Réanimations par région relatifs à la population ", 'rea', pond=True, inline=True)
 plt.savefig(dest + 'covid-rea-par-region-pondere.png')
 
-plot_par_region("Décès par région", 'dc', smooth=1)
+smooth = 3
+plot_par_region(f"Décès par région - Lissage {smooth}j ", 'dc', smooth=smooth)
 plt.savefig(dest + 'covid-deces-par-region.png')
-plot_par_region("Décès pondérés par région", 'dc', pond=True, smooth=1)
+plot_par_region(f"Décès par région relatifs à la population - Lissage {smooth}j ", 'dc', pond=True, smooth=smooth, inline=True)
 plt.savefig(dest + 'covid-deces-par-region-pondere.png')
 
 plt.show()
