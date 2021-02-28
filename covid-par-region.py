@@ -80,7 +80,7 @@ def plot_par_region(title, col, pond=False, smooth=1, inline=False):
                 date2num(datetime.date(2020, 12, 15)),   # Bretagne
                 date2num(datetime.date(2021, 1, 1)),   # Corse 
                 ]
-            if col != 'dc':
+            if col == 'dc':
                 xvals = None
             labelLines(plt.gca().get_lines(), xvals=xvals, align=False, fontsize=12)
     else:
