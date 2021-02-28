@@ -1,6 +1,7 @@
 import datetime
 from labellines import labelLine, labelLines
 import matplotlib
+from matplotlib.dates import date2num
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 matplotlib.use('Agg')
@@ -52,7 +53,6 @@ def plot_par_region(title, col, pond=False, smooth=1, inline=False):
         for c in df.columns:
             df[c] = df[c].divide(pop.get(c, 1))
 
-
     s = df.sum()
     if col == 'dc':
         df = df.diff()
@@ -65,7 +65,24 @@ def plot_par_region(title, col, pond=False, smooth=1, inline=False):
         p.yaxis.set_major_formatter(
             FuncFormatter(lambda y, _: '{:.2%}'.format(y)))
         if inline:
-            labelLines(plt.gca().get_lines(), align=False, fontsize=12)
+            xvals = [
+                date2num(datetime.date(2020, 4, 15)),   # IDF
+                date2num(datetime.date(2020, 4, 15)),   # Est 
+                date2num(datetime.date(2021, 2, 15)),   # PACA 
+                date2num(datetime.date(2021,  1, 1)),   # BFC 
+                date2num(datetime.date(2020, 11, 15)),  # Auvergne 
+                date2num(datetime.date(2020, 4, 15)),   # Nord 
+                date2num(datetime.date(2020, 12, 15)),  # Centre 
+                date2num(datetime.date(2021, 2, 15)),   # Normandie 
+                date2num(datetime.date(2021, 1, 1)),    # Loire 
+                date2num(datetime.date(2021, 2, 1)),   # Occitanie
+                date2num(datetime.date(2020, 11, 15)),   # Sud Ouest 
+                date2num(datetime.date(2020, 12, 15)),   # Bretagne
+                date2num(datetime.date(2021, 1, 1)),   # Corse 
+                ]
+            if col != 'dc':
+                xvals = None
+            labelLines(plt.gca().get_lines(), xvals=xvals, align=False, fontsize=12)
     else:
         df.clip(0).rolling(smooth).mean()\
             .plot.area(stacked=True, figsize=(18, 8), title=title+f' - {now}')
@@ -75,7 +92,7 @@ dest = '/home/francois/www/francois_www/html/playground/img/'
 
 plot_par_region("Hospitalisations par région", 'hosp')
 plt.savefig(dest + 'covid-hosp-par-region.png')
-plot_par_region("Hospitalisations par ré gion relatifs à la population ",
+plot_par_region("Hospitalisations par région relatifs à la population ",
                 'hosp', pond=True, inline=True)
 plt.savefig(dest + 'covid-hosp-par-region-pondere.png')
 
