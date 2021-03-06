@@ -14,19 +14,21 @@ req = requests.get('https://www.data.gouv.fr/fr/datasets/r/08c18e08-6780-452d-9b
 csv = pd.read_csv(StringIO(req.text), delimiter=';', parse_dates=['jour'])
 
 REGIONS = {
-    1: ["IDF", 12_213_447],
+    1: ["Guadeloupe", 387_629],
+    2: ["Martinique", 368_783],
+    3: ["Guyane", 276_128],
+    4: ["La Réunion", 859_959],
+    6: ["Mayotte", 256_518],
+
     11: ["IDF", 12_213_447],
-    2: ["Centre", 2_572_853],
-    24: ["Centre", 2_572_853],
+    24: ["Centre VdL", 2_572_853],
     27: ["BFC", 2_807_807],
     28: ["Normandie", 3_499_280],
-    3: ["Nord", 4_050_756],
-    32: ["Nord", 6_004_108],
-    4: ["Est", 5_550_389],
+    32: ["Hauts de F", 6_004_108],
     44: ["Est", 5_550_389],
     52: ["Loire", 3_781_423],
     53: ["Bretagne", 3_335_414],
-    75: ["Sud Ouest", 5_879_778],
+    75: ["Nouv Acq", 5_879_778],
     76: ["Occitanie", 5_885_496],
     84: ["Auvergne", 7_994_459],
     93: ["PACA", 5_052_832],
@@ -66,6 +68,7 @@ def plot_par_region(title, col, pond=False, smooth=1, inline=False):
             FuncFormatter(lambda y, _: '{:.2%}'.format(y)))
         if inline:
             xvals = [
+
                 date2num(datetime.date(2020, 4, 15)),   # IDF
                 date2num(datetime.date(2020, 4, 15)),   # Est 
                 date2num(datetime.date(2021, 2, 15)),   # PACA 
@@ -74,11 +77,16 @@ def plot_par_region(title, col, pond=False, smooth=1, inline=False):
                 date2num(datetime.date(2020, 4, 15)),   # Nord 
                 date2num(datetime.date(2020, 12, 15)),  # Centre 
                 date2num(datetime.date(2021, 2, 15)),   # Normandie 
-                date2num(datetime.date(2021, 1, 1)),    # Loire 
+                date2num(datetime.date(2020, 7, 15)),   # Guyane 
                 date2num(datetime.date(2021, 2, 1)),   # Occitanie
-                date2num(datetime.date(2020, 11, 15)),   # Sud Ouest 
-                date2num(datetime.date(2020, 12, 15)),   # Bretagne
+                date2num(datetime.date(2021, 1, 1)),    # Loire 
+                date2num(datetime.date(2020, 10, 15)),   # Guadeloupe
                 date2num(datetime.date(2021, 1, 1)),   # Corse 
+                date2num(datetime.date(2020, 11, 15)),   # Sud Ouest 
+                date2num(datetime.date(2020, 11, 15)),  # Mayotte
+                date2num(datetime.date(2020, 12, 15)),   # Bretagne
+                date2num(datetime.date(2020, 4, 15)),   # Martinique
+                date2num(datetime.date(2021,  1, 1)),   # La Réunion
                 ]
             if col == 'dc':
                 xvals = None
@@ -88,7 +96,7 @@ def plot_par_region(title, col, pond=False, smooth=1, inline=False):
             .plot.area(stacked=True, figsize=(18, 8), title=title+f' - {now}')
 
 dest = '/home/francois/www/francois_www/html/playground/img/'
-# dest = 'www/img/'
+dest = 'www/img/'
 
 plot_par_region("Hospitalisations par région", 'hosp')
 plt.savefig(dest + 'covid-hosp-par-region.png')
