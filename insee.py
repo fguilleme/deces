@@ -16,12 +16,12 @@ def load_db():
         # handle invalid dates
         def date_parser(x):
             if len(x) != 8:
+                print(f'Invalid length "{x}"')
                 if len(x) > 4:
                     # just keep the year it should not be so bad
                     x = x[:4]+'0101'
                 else:
                     x = '19000101'      # completely invalid assume 1900 person
-                print(f'Invalid length "{x}"')
 
             y, m, d = map(int, unpack('4s2s2s', bytes(x.encode('ascii'))))
 
@@ -67,6 +67,7 @@ def load_db():
     # list of url to grab the data
     # it should be mostly yearly data but it does not need to
     src = [
+        "https://www.data.gouv.fr/fr/datasets/r/4859e2c2-8b7b-43fc-9fc0-cc87bb3efa04",  # 2021 - m2
         'https://www.data.gouv.fr/fr/datasets/r/9bc3b4b0-faf1-49cd-bd1f-feb5bec303bd',  # 2021 - m1
         "https://www.data.gouv.fr/en/datasets/r/a1f09595-0e79-4300-be1a-c97964e55f05",  # 2020
         "https://www.data.gouv.fr/en/datasets/r/02acf8f5-9190-4f8e-a37c-3b34eccac833",  # 2019
