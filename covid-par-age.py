@@ -7,7 +7,8 @@ from io import StringIO
 import datetime
 
 def filter(csv, col):
-    dropped = ['dc', 'rad', 'rea', 'hosp']
+    dropped = ['dc', 'rad', 'rea', 'hosp',
+               'cl_age90', 'HospConv', 'SSR_USLD', 'autres']
     dropped.remove(col)
     return csv[csv['cl_age90'] > 0]\
         .drop(columns=dropped)\
