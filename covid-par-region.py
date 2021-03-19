@@ -40,7 +40,8 @@ population = sum(pop.values())
 print(f"Population totale = {population}")
 
 def plot_par_region(title, col, pond=False, smooth=1, inline=False):
-    dropped = ['dc', 'rad', 'rea', 'hosp', 'cl_age90']
+    dropped = ['dc', 'rad', 'rea', 'hosp',
+               'cl_age90', 'HospConv', 'SSR_USLD', 'autres']
     dropped.remove(col)
     df = csv[csv['cl_age90'] == 0]\
         .drop(columns=dropped)\
